@@ -1,0 +1,29 @@
+while True:
+    print("\n1. Convertir un numero a numero maya")
+    print("2. Salir")
+
+    op = input("Opcion: ")
+
+    if op == "1":
+        n = int(input("Numero: "))
+        lista = []
+
+        while n > 0:
+            r = n % 20
+            n = n // 20
+
+            b = r // 5
+            p = r % 5
+
+            lista.append("— " * b + "• " * p)
+
+        print("\nNumero maya:")
+
+        for i in range(len(lista)-1, -1, -1):
+            print(lista[i])
+
+    elif op == "2":
+        break
+
+    else:
+        print("Error")
