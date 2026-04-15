@@ -1,0 +1,96 @@
+#EJERCICIO NO.1
+
+size=int(input("Ingrese el tamaño del arreglo: "))
+
+base=int(input("Ingrese el numero base: "))
+
+lista=[]
+
+def multiplos(size, base, lista):
+    for i in range(1, size+1):
+        multiplo=base*i
+        lista.append(multiplo)
+        
+multiplos(size, base, lista)
+
+print("Los multiplos son: ")
+print(lista)
+
+#EJERCICIO NO.2
+
+size = int(input("Ingrese el tamaño del arreglo: "))
+
+nombres = []
+longitudes = []
+
+def vectores(size, nombres, longitudes):
+    for i in range(size):
+        nombre = input("Ingrese un nombre: ")
+        nombres.append(nombre)
+        longitudes.append(len(nombre))
+
+vectores(size, nombres, longitudes)
+
+print("Vector de nombres:")
+print(nombres)
+
+print("Vector de longitudes:")
+print(longitudes)
+
+#EJERCICO NO.3
+
+size = int(input("Ingrese la cantidad de clientes: "))
+lista = []
+
+for i in range(size):
+    print("\n5 Excelente | 4 Muy Buena | 3 Buena | 2 Regular | 1 Malo")
+    valor = int(input("Ingrese la calificación: "))
+    lista.append(valor)
+
+print("\nArreglo de evaluaciones:")
+print(lista)
+
+excelente = 0
+muybuena = 0
+buena = 0
+regular = 0
+malo = 0
+
+for i in lista:
+    if i == 5:
+        excelente += 1
+    elif i == 4:
+        muybuena += 1
+    elif i == 3:
+        buena += 1
+    elif i == 2:
+        regular += 1
+    elif i == 1:
+        malo += 1
+
+print("\nRespuestas")
+print("Excelente:", excelente)
+print("Muy Buena:", muybuena)
+print("Buena:", buena)
+print("Regular:", regular)
+print("Malo:", malo)
+
+conteos = [malo, regular, buena, muybuena, excelente]
+mayor = max(conteos)
+mas_frecuente = conteos.index(mayor) + 1
+print("\nMás frecuente:", mas_frecuente)
+
+suma = 0
+for i in lista:
+    suma += i
+
+promedio = suma / size
+print("Promedio:", round(promedio, 2))
+
+menores = 0
+for i in lista:
+    if i < promedio:
+        menores += 1
+
+porcentaje = (menores * 100) / size
+print("Porcentaje menor al promedio:", round(porcentaje, 2), "%")
