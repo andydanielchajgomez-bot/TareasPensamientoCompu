@@ -1,0 +1,287 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+# =====================================
+#   MINIPROYECTO MONITOREO DE SALUD
+#   GUI CON TKINTER
+# =====================================
+
+# DATOS
+dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+
+niveles_azucar = [130, 160, 95, 175, 160]
+niveles_sal = [2000, 2400, 1800, 2400, 2700]
+
+presion_sistolica = [115, 130, 110, 125, 175]
+presion_diastolica = [75, 85, 70, 78, 95]
+
+# =====================================
+# FUNCIONES
+# =====================================
+
+def evaluar_azucar(valor):
+    if 70 <= valor <= 140:
+        return "Normal"
+    return "ALERTA"
+
+def evaluar_sal(valor):
+    if valor <= 2300:
+        return "Normal"
+    return "ALERTA"
+
+def clasificar_presion(sys, dia):
+
+    if sys < 120 and dia < 80:
+        return "Normal"
+
+    elif 120 <= sys <= 129 and dia < 80:
+        return "Elevada"
+
+    elif 130 <= sys <= 139 or 80 <= dia <= 89:
+        return "Hipertensión Etapa 1"
+
+    elif sys >= 140 or dia >= 90:
+        return "Hipertensión Etapa 2"
+
+# =====================================
+# VENTANA PRINCIPAL
+# =====================================
+
+ventana = tk.Tk()
+ventana.title("Sistema de Monitoreo de Salud")
+ventana.geometry("1000x650")
+ventana.configure(bg="#E8F1F8")
+
+# =====================================
+# TÍTULO
+# =====================================
+
+titulo = tk.Label(
+    ventana,
+    text="MONITOREO SEMANAL DE SALUD",
+    font=("Arial", 20, "bold"),
+    bg="#E8F1F8",
+    fg="#0B3C5D"
+)
+
+titulo.pack(pady=15)
+
+# =====================================
+# FRAME SUPERIOR
+# =====================================
+
+frame_superior = tk.Frame(ventana, bg="#E8F1F8")
+frame_superior.pack(pady=10)
+
+# =====================================
+# SELECCIONAR DÍA
+# =====================================
+
+label_dia = tk.Label(
+    frame_superior,
+    text="Seleccionar Día:",
+    font=("Arial", 12, "bold"),
+    bg="#E8F1F8"
+)
+
+label_dia.grid(row=0, column=0, padx=10)
+
+combo_dias = ttk.Combobox(
+    frame_superior,
+    values=dias,
+    state="readonly",
+    width=20
+)
+
+combo_dias.grid(row=0, column=1, padx=10)
+combo_dias.current(0)
+
+# =====================================
+# ÁREA DE RESULTADOS
+# =====================================
+
+frame_resultados = tk.Frame(
+    ventana,
+    bg="white",
+    bd=2,
+    relief="solid"
+)
+
+frame_resultados.pack(pady=20, padx=20, fill="x")
+
+texto_resultado = tk.Label(
+    frame_resultados,
+    text="Seleccione un día y presione el botón.",
+    font=("Arial", 13),
+    bg="white",
+    justify="left"
+)
+
+texto_resultado.pack(pady=20)
+
+# =====================================
+# MOSTRAR INFORMACIÓN DEL DÍA
+# =====================================
+
+def mostrar_dia():
+
+    dia_seleccionado = combo_dias.get()
+
+    indice = dias.index(dia_seleccionado)
+
+    azucar = niveles_azucar[indice]
+    sal = niveles_sal[indice]
+
+    sistolica = presion_sistolica[indice]
+    diastolica = presion_diastolica[indice]
+
+    estado_azucar = evaluar_azucar(azucar)
+    estado_sal = evaluar_sal(sal)
+
+    estado_presion = clasificar_presion(
+        sistolica,
+        diastolica
+    )
+
+    alerta = "NO"
+
+    if (
+        estado_azucar == "ALERTA"
+        or estado_sal == "ALERTA"
+        or "Hipertensión" in estado_presion
+    ):
+        alerta = "SÍ"
+
+    resultado = f"""
+DÍA: {dia_seleccionado}
+
+Azúcar: {azucar} mg/dL
+Estado Azúcar: {estado_azucar}
+
+Sal Consumida: {sal} mg
+Estado Sal: {estado_sal}
+
+Presión Arterial: {sistolica}/{diastolica}
+Estado Presión: {estado_presion}
+
+¿Requiere Atención Médica?: {alerta}
+"""
+
+    texto_resultado.config(text=resultado)
+
+# =====================================
+# BOTÓN MOSTRAR
+# =====================================
+
+boton_mostrar = tk.Button(
+    frame_superior,
+    text="Mostrar Datos",
+    font=("Arial", 11, "bold"),
+    bg="#2E86DE",
+    fg="white",
+    padx=15,
+    command=mostrar_dia
+)
+
+boton_mostrar.grid(row=0, column=2, padx=10)
+
+# =====================================
+# TABLA GENERAL
+# =====================================
+
+subtitulo = tk.Label(
+    ventana,
+    text="Resumen Semanal",
+    font=("Arial", 15, "bold"),
+    bg="#E8F1F8"
+)
+
+subtitulo.pack(pady=10)
+
+columnas = (
+    "Día",
+    "Azúcar",
+    "Sal",
+    "Presión",
+    "Estado"
+)
+
+tabla = ttk.Treeview(
+    ventana,
+    columns=columnas,
+    show="headings",
+    height=5
+)
+
+for col in columnas:
+    tabla.heading(col, text=col)
+    tabla.column(col, width=180, anchor="center")
+
+tabla.pack(pady=10)
+
+# INSERTAR DATOS EN TABLA
+
+for i in range(len(dias)):
+
+    estado_presion = clasificar_presion(
+        presion_sistolica[i],
+        presion_diastolica[i]
+    )
+
+    tabla.insert(
+        "",
+        "end",
+        values=(
+            dias[i],
+            niveles_azucar[i],
+            niveles_sal[i],
+            f"{presion_sistolica[i]}/{presion_diastolica[i]}",
+            estado_presion
+        )
+    )
+
+# =====================================
+# PROMEDIOS
+# =====================================
+
+prom_azucar = sum(niveles_azucar) / len(niveles_azucar)
+prom_sal = sum(niveles_sal) / len(niveles_sal)
+
+prom_sys = sum(presion_sistolica) / len(presion_sistolica)
+prom_dia = sum(presion_diastolica) / len(presion_diastolica)
+
+label_promedios = tk.Label(
+    ventana,
+    text=(
+        f"Promedio Azúcar: {round(prom_azucar,2)} mg/dL   |   "
+        f"Promedio Sal: {round(prom_sal,2)} mg   |   "
+        f"Promedio Presión: {round(prom_sys,2)}/{round(prom_dia,2)}"
+    ),
+    font=("Arial", 12, "bold"),
+    bg="#E8F1F8",
+    fg="#154360"
+)
+
+label_promedios.pack(pady=20)
+
+# =====================================
+# BOTÓN SALIR
+# =====================================
+
+boton_salir = tk.Button(
+    ventana,
+    text="Salir",
+    font=("Arial", 11, "bold"),
+    bg="#E74C3C",
+    fg="white",
+    padx=20,
+    command=ventana.destroy
+)
+
+boton_salir.pack(pady=10)
+
+# =====================================
+# EJECUTAR
+# =====================================
+
+ventana.mainloop()
